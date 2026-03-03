@@ -55,7 +55,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
  * @example: Khung dữ liệu sẽ dạng  Header:0xAA|Id|CMD|DIR|DATAHIGH|DATALOW|CHECKSUM|Tail:0x55
 
  */
-void Parse_Check_Error(uint8_t data[]){
+uint8_t Parse_Check_Error(uint8_t data[]){
 	// 1. Kiểm tra Header (Byte 0)
 	    if (data[0] != 0xAA) {
 	        // Sai Header:
