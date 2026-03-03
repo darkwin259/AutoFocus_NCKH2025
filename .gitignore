@@ -1,0 +1,24 @@
+# --- STM32 / C / C++ ---
+**/Debug/
+**/Release/
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+.mxproject
+*.ioc
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# --- OS / Tools ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
