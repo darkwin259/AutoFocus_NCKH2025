@@ -28,7 +28,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-
+#include "ms41929.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -67,6 +67,8 @@ void Error_Handler(void);
 #define MS_RSTB_GPIO_Port GPIOB
 #define RS485_DIR_Pin GPIO_PIN_8
 #define RS485_DIR_GPIO_Port GPIOA
+#define VD_FZ_GPIO_Port GPIOB
+#define VD_FZ_Pin GPIO_PIN_0
 
 /* USER CODE BEGIN Private defines */
 
