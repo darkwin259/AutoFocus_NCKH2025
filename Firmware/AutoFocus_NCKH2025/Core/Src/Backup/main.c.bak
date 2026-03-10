@@ -23,7 +23,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-#include "ms41929.h"
+#include <string.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -35,7 +35,20 @@
 extern UART_HandleTypeDef huart1;
 /* USER CODE END PV */
 /* USER CODE END PTD */
+void RS485_Send(uint8_t *pData, uint16_t Size) {
+    // 1. Chuyển sang chế độ TRUYỀN (TX)
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 
+    // 2. Gửi dữ liệu
+    HAL_UART_Transmit(&huart1, pData, Size, 100);
+
+    // 3. ĐỢI CHO ĐẾN KHI TRUYỀN XONG HOÀN TOÀN (Transmission Complete)
+    // Đây là bước quan trọng nhất cho RS485
+    while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET);
+
+    // 4. Chuyển về chế độ NHẬN (RX) để đợi lệnh tiếp theo
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET);
+}
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
@@ -49,15 +62,15 @@ extern UART_HandleTypeDef huart1;
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-extern UART_HandleTypeDef huart1;
+
 /* USER CODE END PV */
-uint8_t tx = 0xAA;
+
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
-
+uint8_t test_packet[] = {0xAA, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x55};
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
@@ -97,30 +110,20 @@ int main(void)
   MX_USART1_UART_Init();
   //MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
- /// HAL_UART_Receive_DMA(&huart1, rx_data, 8);
-  MS41929_Init();
-  MS41929_SetDirection(1);
-
+  HAL_UART_Receive_DMA(&huart1, rx_data, 8);
+  //MS41929_Init();
+  //MS41929_SetDirection(1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
+  /* main.c while(1) */
+    while (1)
+    {
+    	MS41929_WriteReg(0x15, 0x55AA);
 
-	  	  	MS41929_ControlLED(1, 0);
-	        MS41929_SetDirection(MS_DIR_FORWARD);
-	        MS41929_Step(1000, 2);     // 1000 bước, delay 2ms/bước
-	        HAL_Delay(500); // Nghỉ 0.5 giây
-
-	        // 2. Motor 1 quay ngược 500 bước + Tắt LED1, Bật LED2
-	        MS41929_ControlLED(0, 1);
-	        MS41929_SetDirection(MS_DIR_BACKWARD);
-	        MS41929_Step(1000, 2);     // 1000 bước, delay 2ms/bước
-	        HAL_Delay(1000); // Nghỉ 1 giây
-    /* USER CODE BEGIN 3 */
-  }
+    	      HAL_Delay(10); // Gửi liên tục để dễ soi
+    }
   /* USER CODE END 3 */
 }
 
@@ -147,7 +150,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 64;
+  RCC_OscInitStruct.PLL.PLLN = 100;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)

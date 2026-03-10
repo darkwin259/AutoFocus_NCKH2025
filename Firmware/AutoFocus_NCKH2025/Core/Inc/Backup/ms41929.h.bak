@@ -13,21 +13,16 @@
 #define MS_REG_PHASE_CD     0x27
 #define MS_REG_CUR_CD       0x28
 #define MS_REG_STEP_CD      0x29  // Điều khiển Motor CD và LED 1 (LEDA)
-#define MS_REG_INTCT_CD     0x2a
+#define MS_REG_INTCT_CD     0x2A
 
 #define MS_REG_LED_CTRL     0x2B
 #define MS_REG_DIRECTION    0x2C
-// --- HƯỚNG DI CHUYỂN ---
-#define MS_DIR_FORWARD      0x0001
-#define MS_DIR_BACKWARD     0x0000
-// --- CÁC HÀM ĐIỀU KHIỂN MOTOR ---
-void MS41929_Pulse(void);
-void MS41929_Move(uint8_t motor, uint8_t dir, uint16_t steps, uint16_t speed_delay);
+
 // --- CÁC HÀM GIAO TIẾP ---
 void MS41929_Init(void);
 void MS41929_WriteReg(uint8_t addr, uint16_t data);
 void MS41929_SetDirection(uint8_t dir);
-void MS41929_Step(uint16_t steps, uint16_t speed_ms);
+void MS41929_Step(uint16_t count);
 void MS41929_ControlLED(uint8_t led1_state, uint8_t led2_state);
 
 #endif
